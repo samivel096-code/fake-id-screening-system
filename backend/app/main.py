@@ -26,16 +26,18 @@ app = FastAPI(
 
 # CORS configuration
 is_production = os.getenv("ENVIRONMENT", "").lower() == "production"
-default_cors_origins = "" if is_production else "http://localhost:5173,http://127.0.0.1:5173"
+frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
+if is_production and not frontend_url:
+    raise RuntimeError("FRONTEND_URL environment variable is required in production")
+
+configured_origins = os.getenv("CORS_ORIGINS", "").split(",")
 cors_origins = [
     origin.strip().rstrip("/")
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        default_cors_origins
-    ).split(",")
+    for origin in configured_origins
     if origin.strip()
 ]
-frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
+if not is_production:
+    cors_origins.extend(["http://localhost:5173", "http://127.0.0.1:5173"])
 if frontend_url and frontend_url not in cors_origins:
     cors_origins.append(frontend_url)
 

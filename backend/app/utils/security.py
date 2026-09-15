@@ -9,7 +9,9 @@ from sqlalchemy.orm import Session
 from app.models.database import get_db
 from app.models.user import User
 
-SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-document-screening-key-2026-auth-prod")
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET environment variable is required")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

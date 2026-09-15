@@ -1,6 +1,6 @@
 import { User, DashboardStats, TemplateItem, VerificationResult, DemoDocItem } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 function getHeaders(isFormData = false): Record<string, string> {
   const token = localStorage.getItem('auth_token');

@@ -25,9 +25,23 @@ app = FastAPI(
 )
 
 # CORS configuration
+is_production = os.getenv("ENVIRONMENT", "").lower() == "production"
+default_cors_origins = "" if is_production else "http://localhost:5173,http://127.0.0.1:5173"
+cors_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        default_cors_origins
+    ).split(",")
+    if origin.strip()
+]
+frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
+if frontend_url and frontend_url not in cors_origins:
+    cors_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
